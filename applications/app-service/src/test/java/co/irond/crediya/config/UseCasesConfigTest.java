@@ -1,10 +1,14 @@
 package co.irond.crediya.config;
 
+import co.irond.crediya.model.logs.gateway.LoggerGateway;
+import co.irond.crediya.model.statistics.gateways.StatisticsRepository;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UseCasesConfigTest {
@@ -33,6 +37,16 @@ public class UseCasesConfigTest {
         @Bean
         public MyUseCase myUseCase() {
             return new MyUseCase();
+        }
+
+        @Bean
+        public StatisticsRepository statisticsRepository() {
+            return Mockito.mock(StatisticsRepository.class);
+        }
+
+        @Bean
+        public LoggerGateway logger() {
+            return Mockito.mock(LoggerGateway.class);
         }
     }
 
