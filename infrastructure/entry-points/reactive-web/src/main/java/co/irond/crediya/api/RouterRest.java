@@ -11,7 +11,6 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
-import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
@@ -25,7 +24,6 @@ public class RouterRest {
             @RouterOperation(path = "/api/v1/reportes", method = RequestMethod.GET, beanClass = Handler.class, beanMethod = "listenGETStatisticsUseCase")
     })
     public RouterFunction<ServerResponse> routerFunction(Handler handler) {
-        return route(GET(reportsPath.getV1() + reportsPath.getReportes()), handler::listenGETStatisticsUseCase)
-                .andRoute(POST(reportsPath.getV1() + reportsPath.getReportes()), handler::listenPOSTUseCase);
+        return route(GET(reportsPath.getV1() + reportsPath.getReportes()), handler::listenGETStatisticsUseCase);
     }
 }

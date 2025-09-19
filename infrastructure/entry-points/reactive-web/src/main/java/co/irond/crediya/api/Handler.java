@@ -2,8 +2,6 @@ package co.irond.crediya.api;
 
 import co.irond.crediya.api.dto.ApiResponseDto;
 import co.irond.crediya.constants.OperationsMessage;
-import co.irond.crediya.model.dto.StatisticsRequestDto;
-import co.irond.crediya.model.statistics.Statistics;
 import co.irond.crediya.usecase.statistics.StatisticsUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,10 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-
-import java.math.BigDecimal;
-
-import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
 @Component
 @RequiredArgsConstructor
@@ -49,10 +43,5 @@ public class Handler {
                             .data(statistics).build();
                     return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(response);
                 });
-    }
-
-    public Mono<ServerResponse> listenPOSTUseCase(ServerRequest serverRequest) {
-        StatisticsRequestDto updateRequest = new StatisticsRequestDto("loanApplicationsApproved", BigDecimal.TEN);
-        return ok().contentType(MediaType.APPLICATION_JSON).body(statisticsUseCase.save(updateRequest), Statistics.class);
     }
 }
