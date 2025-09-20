@@ -72,7 +72,6 @@ class StatisticsUseCaseTest {
 
     @Test
     void save_shouldCreateNewStatisticsIfNotFound() {
-        // Given no existing record
         when(statisticsRepository.findById(anyString())).thenReturn(Mono.empty());
         when(statisticsRepository.save(any(Statistics.class))).thenReturn(Mono.just(Statistics.builder()
                 .metricName("loanApplicationsApproved")
@@ -91,7 +90,7 @@ class StatisticsUseCaseTest {
                 .verifyComplete();
 
         verify(statisticsRepository, times(1)).findById(anyString());
-        verify(statisticsRepository, times(2)).save(any(Statistics.class)); // save is called twice: once in switchIfEmpty, once in flatMap
+        verify(statisticsRepository, times(2)).save(any(Statistics.class));
         verify(logger, times(1)).info(anyString(), anyString());
         verify(logger, times(1)).info(anyString(), any(Statistics.class));
     }
@@ -111,6 +110,26 @@ class StatisticsUseCaseTest {
 
         verify(statisticsRepository, never()).findById(anyString());
         verify(statisticsRepository, never()).save(any(Statistics.class));
+        verify(logger, times(1)).info(anyString(), anyString());
+    }
+
+    @Test
+    void save_shouldReturnException() {
+        when(statisticsRepository.findById(anyString()))
+                .thenReturn(Mono.empty());
+        when(statisticsRepository.save(any(Statistics.class))).thenReturn(Mono.error(new RuntimeException("Error saving statistics request")));
+
+        Mono<Statistics> result = statisticsUseCase.save(requestDto);
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable ->
+                        throwable instanceof RuntimeException &&
+                                ((RuntimeException) throwable).getMessage().equals("Error saving statistics request")
+                )
+                .verify();
+
+        verify(statisticsRepository, times(1)).findById(anyString());
+        verify(statisticsRepository, times(1)).save(any(Statistics.class));
         verify(logger, times(1)).info(anyString(), anyString());
     }
 
@@ -136,6 +155,23 @@ class StatisticsUseCaseTest {
 
         StepVerifier.create(result)
                 .expectComplete();
+
+        verify(statisticsRepository, times(1)).findById(anyString());
+        verify(logger, never()).info(anyString(), any(Statistics.class));
+    }
+
+    @Test
+    void findById_shouldReturnException() {
+        when(statisticsRepository.findById(anyString())).thenReturn(Mono.error(new RuntimeException("Error getting statistics")));
+
+        Mono<Statistics> result = statisticsUseCase.findById("loanApplicationsApproved");
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable ->
+                        throwable instanceof RuntimeException &&
+                                ((RuntimeException) throwable).getMessage().equals("Error getting statistics")
+                )
+                .verify();
 
         verify(statisticsRepository, times(1)).findById(anyString());
         verify(logger, never()).info(anyString(), any(Statistics.class));
