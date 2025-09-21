@@ -28,6 +28,7 @@ subprojects {
     }
 
     dependencies {
+		implementation platform('software.amazon.awssdk:bom:2.33.1')
         implementation 'io.projectreactor:reactor-core'
         implementation 'io.projectreactor.addons:reactor-extra'
 
@@ -93,6 +94,19 @@ tasks.register('jacocoMergedReport', JacocoReport) {
     additionalSourceDirs.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
     sourceDirectories.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
     classDirectories.setFrom files(subprojects.sourceSets.main.output)
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it, exclude: [
+                '**/api/',
+                '**/security/',
+                '**/sqs/',
+                '**/consumer/',
+                '**/metrics/',
+                '**/dynamodb/',
+                '**/logger/',
+                '**/constants/',
+                '**/MainApplication.class'
+        ])
+    }))
     executionData.setFrom project.fileTree(dir: '.', include: '**/build/jacoco/test.exec')
     reports {
         xml.setRequired true
